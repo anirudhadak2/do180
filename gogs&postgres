@@ -94,4 +94,45 @@ after deploying the gogs and postges  then  expose to both deployment and create
     that change the host ip address  in parameters  the Host   is  the Postgres SVC   IP adderss 
     after that   the service of gogs will take the all parameters for installing the gogs 
      then access the  gogs using the gogs svc NodePort no.  using the Node ip:NodePort 
-     
+----------------------------------------------------------------------------------------
+ mysql yaml 
+ 
+ 
+ apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: mysql
+  name: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - image: mysql:5.6
+        name: mysql
+
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: centos
+        - name: MYSQL_USER
+          value: myuser1
+        - name: MYSQL_PASSWORD
+          value: myuserpass
+        - name: MYSQL_DATABASE
+          value: blr
+        ports:
+        - containerPort: 3306
+        resources: {}
+status: {}
+
+--------------------------------
