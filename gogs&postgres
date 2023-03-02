@@ -1,0 +1,97 @@
+
+
+
+replace gogs service type= Clusterip to Nodeport for accessing gogs outside the cluseter
+use nodeip:nodeport in google for accessing gogs  
+    enter all parameters of postgres  Ex; Host ip , User, Password etc, then install gogs 
+-------------------------------------
+
+kubectl create deployment postgres --image=centos/postgresql-96-centos7  --dry-run=client -o yaml > postgre.yml  
+kubectl create deployment gogs --image=docker.io/gogs/gogs  --dry-run=client -o yaml > gog.yml  
+kubectl expose deployment postgres --port=5432  
+kubectl expose deployment gogs --port=3000  --type=NodePort 
+
+------------------------------------
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: gogs
+  name: gogs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gogs
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: gogs
+    spec:
+      containers:
+      - image: docker.io/gogs/gogs
+        name: gogs
+        env:
+        - name: DB_TYPE
+          value: postgres
+        - name: HOST
+          value: 10.111.181.60  
+        - name: NAME
+          value: database1
+        - name: USER
+          value: user1
+        - name: PASSWD
+          value: userpass      
+
+        resources: {}
+status: {}
+
+------------------------
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: postgres
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - image: centos/postgresql-96-centos7
+        name: postgresql-96-centos7
+        env:
+         - name: POSTGRESQL_ADMIN_PASSWORD
+           value: password
+         - name: POSTGRESQL_USER
+           value: user1
+         - name: POSTGRESQL_PASSWORD
+           value: userpass
+         - name: POSTGRESQL_DATABASE
+           value: database1
+        ports:
+        - containerPort: 3306
+        resources: {}
+status: {}
+controlplane $ 
+-----------------------------------
+after deploying the gogs and postges  then  expose to both deployment and create service
+    then before accessing the  gog  deployment service  make some changes in gogs running  deployment 
+    that change the host ip address  in parameters  the Host   is  the Postgres SVC   IP adderss 
+    after that   the service of gogs will take the all parameters for installing the gogs 
+     then access the  gogs using the gogs svc NodePort no.  using the Node ip:NodePort 
+     
