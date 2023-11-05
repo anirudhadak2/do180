@@ -1,5 +1,8 @@
 # do180
 
+https://www.redhat.com/en/interactive-labs/get-started-red-hat-openshift-developers
+
+
   Dockerfile on Github for S2I with Webhook
 
   
